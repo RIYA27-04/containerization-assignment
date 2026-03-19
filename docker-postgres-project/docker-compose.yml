@@ -1,0 +1,18 @@
+services:
+  database:
+    image: postgres:15
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: testdb
+    ports:
+      - "5432:5432"
+
+  backend:
+    build: ./backend
+    container_name: node_backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - database
