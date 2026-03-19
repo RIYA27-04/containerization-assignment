@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Assignment 1 - Containerization</title>
+</head>
+<body>
+
+<h1>Assignment 1 - Containerization & DevOps</h1>
+
+<h2>Docker Commands</h2>
+<pre>
+docker run hello-world
+docker pull ubuntu
+docker run -it ubuntu
+docker ps
+docker stop <container_id>
+docker rm <container_id>
+</pre>
+
+<h2>Dockerfile</h2>
+<pre>
+FROM ubuntu
+RUN apt update
+CMD ["echo", "Hello from Docker"]
+</pre>
+
+<h2>Conclusion</h2>
+<p>This assignment demonstrates basic Docker commands and containerization concepts.</p>
+
+</body>
+</html>
