@@ -2,30 +2,95 @@
 <html>
 <head>
     <title>Assignment 1 - Containerization</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 0;
+            background: #f4f4f4;
+        }
+        header {
+            background: #222;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        section {
+            margin: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+        }
+        h2 {
+            color: #333;
+        }
+        pre {
+            background: #eee;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background: #222;
+            color: white;
+        }
+    </style>
 </head>
+
 <body>
 
-<h1>Assignment 1 - Containerization & DevOps</h1>
+<header>
+    <h1>Containerization & DevOps</h1>
+    <p>Assignment 1</p>
+</header>
 
-<h2>Docker Commands</h2>
-<pre>
+<section>
+    <h2>Introduction</h2>
+    <p>
+        Containerization is a lightweight virtualization method that allows applications
+        to run in isolated environments using Docker.
+    </p>
+</section>
+
+<section>
+    <h2>Docker Commands</h2>
+    <pre>
 docker run hello-world
 docker pull ubuntu
 docker run -it ubuntu
 docker ps
-docker stop <container_id>
-docker rm <container_id>
-</pre>
+docker ps -a
+docker stop &lt;container_id&gt;
+docker rm &lt;container_id&gt;
+    </pre>
+</section>
 
-<h2>Dockerfile</h2>
-<pre>
+<section>
+    <h2>Dockerfile</h2>
+    <pre>
 FROM ubuntu
 RUN apt update
 CMD ["echo", "Hello from Docker"]
-</pre>
+    </pre>
+</section>
 
-<h2>Conclusion</h2>
-<p>This assignment demonstrates basic Docker commands and containerization concepts.</p>
+<section>
+    <h2>Output</h2>
+    <p>Add your screenshots here (optional)</p>
+</section>
+
+<section>
+    <h2>Conclusion</h2>
+    <p>
+        This assignment demonstrates the basic use of Docker commands,
+        container creation, and image building.
+    </p>
+</section>
+
+<footer>
+    <p>Created by Riya Jain</p>
+</footer>
 
 </body>
 </html>
