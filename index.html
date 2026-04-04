@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<<<<<<< HEAD
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -924,5 +925,129 @@ function showSection(id) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 </script>
+=======
+<html>
+<head>
+    <title>Containerization Assignment</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to right, #4facfe, #00f2fe);
+        }
+
+        header {
+            text-align: center;
+            padding: 30px;
+            color: white;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 40px;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+        }
+
+        .card {
+            background: white;
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        pre {
+            background: #1e1e1e;
+            color: #00ff9d;
+            padding: 15px;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🚀 Containerization & DevOps</h1>
+    <p>Assignment 1 | Docker Basics</p>
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <h2>📌 Introduction</h2>
+        <p>
+            Containerization is a lightweight virtualization technology that allows
+            applications to run in isolated environments using Docker.
+        </p>
+    </div>
+
+    <div class="card">
+        <h2>🐳 Docker Commands</h2>
+        <pre>
+docker run hello-world
+docker pull ubuntu
+docker run -it ubuntu
+docker ps
+docker ps -a
+docker stop &lt;container_id&gt;
+docker rm &lt;container_id&gt;
+        </pre>
+    </div>
+
+    <div class="card">
+        <h2>⚙️ Dockerfile</h2>
+        <pre>
+FROM ubuntu
+RUN apt update
+CMD ["echo", "Hello from Docker"]
+        </pre>
+    </div>
+
+    <div class="card">
+        <h2>📸 Output Screenshots</h2>
+        <p>Add screenshots here to show execution results.</p>
+    </div>
+
+    <div class="card">
+        <h2>📊 Docker vs Virtual Machine</h2>
+        <ul>
+            <li>Docker is lightweight</li>
+            <li>VM uses full OS</li>
+            <li>Docker is faster</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>✅ Conclusion</h2>
+        <p>
+            Docker simplifies deployment, improves scalability, and enables
+            consistent environments across systems.
+        </p>
+    </div>
+
+</div>
+
+<footer>
+    <p>💻 Created by Riya Jain</p>
+</footer>
+
+>>>>>>> be9078853fc549cc10273c995f0689e1c0cf18fa
 </body>
 </html>
