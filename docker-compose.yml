@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+
+  db:
+    build:
+      context: ./database
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: riya
+      POSTGRES_PASSWORD: riya123
+      POSTGRES_DB: riyadb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - mynetwork
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+    container_name: backend_api
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: appdb
+      DB_USER: os.getenv("DB_USER", "riya")
+      DB_PASS: os.getenv("DB_PASS", "riya123")
+    ports:
+      - "8000:8000"
+    networks:
+      - mynetwork
+    depends_on:
+      - db
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+
+networks:
+  mynetwork:
+    driver: bridge
