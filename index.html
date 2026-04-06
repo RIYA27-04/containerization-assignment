@@ -30,7 +30,6 @@
     overflow-x: hidden;
   }
 
-  /* Animated grid background */
   body::before {
     content: '';
     position: fixed;
@@ -43,7 +42,6 @@
     z-index: 0;
   }
 
-  /* Glow orbs */
   .orb {
     position: fixed;
     border-radius: 50%;
@@ -68,7 +66,6 @@
     padding: 60px 24px 80px;
   }
 
-  /* Header */
   .header {
     text-align: center;
     margin-bottom: 64px;
@@ -127,7 +124,6 @@
     font-family: 'Space Mono', monospace;
   }
 
-  /* Section label */
   .section-label {
     font-family: 'Space Mono', monospace;
     font-size: 10px;
@@ -139,7 +135,6 @@
     animation: fadeUp 0.8s ease 0.2s both;
   }
 
-  /* Cards grid */
   .cards {
     display: flex;
     flex-direction: column;
@@ -193,18 +188,21 @@
   .card:hover::before { opacity: 1; }
   .card:hover::after { transform: scaleY(1); }
 
-  /* Card colors */
-  .card.web  { --card-accent: #00d4ff; }
-  .card.doc  { --card-accent: #10b981; }
+  .card.web    { --card-accent: #00d4ff; }
+  .card.doc    { --card-accent: #10b981; }
   .card.docker { --card-accent: #3b82f6; }
-  .card.py   { --card-accent: #f59e0b; }
-  .card.sql  { --card-accent: #a855f7; }
+  .card.py     { --card-accent: #f59e0b; }
+  .card.sql    { --card-accent: #a855f7; }
+  .card.df     { --card-accent: #ec4899; }
+  .card.md     { --card-accent: #06b6d4; }
 
-  .card:hover.web  { box-shadow: -4px 0 30px rgba(0,212,255,0.1), 0 8px 32px rgba(0,0,0,0.3); }
-  .card:hover.doc  { box-shadow: -4px 0 30px rgba(16,185,129,0.1), 0 8px 32px rgba(0,0,0,0.3); }
-  .card:hover.docker { box-shadow: -4px 0 30px rgba(59,130,246,0.1), 0 8px 32px rgba(0,0,0,0.3); }
-  .card:hover.py   { box-shadow: -4px 0 30px rgba(245,158,11,0.1), 0 8px 32px rgba(0,0,0,0.3); }
-  .card:hover.sql  { box-shadow: -4px 0 30px rgba(168,85,247,0.1), 0 8px 32px rgba(0,0,0,0.3); }
+  .card:hover.web    { box-shadow: -4px 0 30px rgba(0,212,255,0.1),    0 8px 32px rgba(0,0,0,0.3); }
+  .card:hover.doc    { box-shadow: -4px 0 30px rgba(16,185,129,0.1),   0 8px 32px rgba(0,0,0,0.3); }
+  .card:hover.docker { box-shadow: -4px 0 30px rgba(59,130,246,0.1),   0 8px 32px rgba(0,0,0,0.3); }
+  .card:hover.py     { box-shadow: -4px 0 30px rgba(245,158,11,0.1),   0 8px 32px rgba(0,0,0,0.3); }
+  .card:hover.sql    { box-shadow: -4px 0 30px rgba(168,85,247,0.1),   0 8px 32px rgba(0,0,0,0.3); }
+  .card:hover.df     { box-shadow: -4px 0 30px rgba(236,72,153,0.1),   0 8px 32px rgba(0,0,0,0.3); }
+  .card:hover.md     { box-shadow: -4px 0 30px rgba(6,182,212,0.1),    0 8px 32px rgba(0,0,0,0.3); }
 
   .icon-wrap {
     width: 48px; height: 48px;
@@ -248,7 +246,6 @@
     transform: translateX(4px);
   }
 
-  /* Footer */
   .footer {
     margin-top: 60px;
     text-align: center;
@@ -271,15 +268,16 @@
 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(24px); }
-    to { opacity: 1; transform: translateY(0); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
-  /* Staggered card animations */
   .card:nth-child(1) { animation: fadeUp 0.6s ease 0.35s both; }
   .card:nth-child(2) { animation: fadeUp 0.6s ease 0.45s both; }
   .card:nth-child(3) { animation: fadeUp 0.6s ease 0.55s both; }
   .card:nth-child(4) { animation: fadeUp 0.6s ease 0.65s both; }
   .card:nth-child(5) { animation: fadeUp 0.6s ease 0.75s both; }
+  .card:nth-child(6) { animation: fadeUp 0.6s ease 0.85s both; }
+  .card:nth-child(7) { animation: fadeUp 0.6s ease 0.95s both; }
 </style>
 </head>
 <body>
@@ -299,25 +297,28 @@
 
   <div class="cards">
 
-    <a class="card web" href=href="interactive.html" target="_blank">
-      <div class="icon-wrap">🌐</div>
-      <div class="card-info">
-        <div class="card-title">Interactive Project Page</div>
-        <div class="card-desc">Live site — Overview · Setup · API · Comparison</div>
-      </div>
-      <div class="arrow">→</div>
-    </a>
-
-    <a class="card doc" href=href="interactive.html" target="_blank">
+    <!-- 1. Assignment Report -->
+    <a class="card doc" href="README.md" target="_blank">
       <div class="icon-wrap">📄</div>
       <div class="card-info">
-        <div class="card-title">Full Report</div>
-        <div class="card-desc">REPORT.html — Architecture · Analysis · Conclusion</div>
+        <div class="card-title">Assignment Report</div>
+        <div class="card-desc">README.md — Full report & analysis</div>
       </div>
       <div class="arrow">→</div>
     </a>
 
-    <a class="card docker" href=href="report.html" target="_blank">
+    <!-- 3. Intro -->
+    <a class="card web" href="intro.md" target="_blank">
+      <div class="icon-wrap">🌐</div>
+      <div class="card-info">
+        <div class="card-title">Introduction</div>
+        <div class="card-desc">intro.md — Project introduction & context</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <!-- 4. Docker Compose -->
+    <a class="card docker" href="docker-compose.yml" target="_blank">
       <div class="icon-wrap">🐳</div>
       <div class="card-info">
         <div class="card-title">Docker Compose File</div>
@@ -326,7 +327,8 @@
       <div class="arrow">→</div>
     </a>
 
-    <a class="card py" href=href="docker-compose.yml" target="_blank">
+    <!-- 5. Backend App -->
+    <a class="card py" href="backend/app.py" target="_blank">
       <div class="icon-wrap">🐍</div>
       <div class="card-info">
         <div class="card-title">Backend Code</div>
@@ -335,10 +337,21 @@
       <div class="arrow">→</div>
     </a>
 
-    <a class="card sql" href=href="backend/app.py" target="_blank">
+    <!-- 6. Backend Dockerfile -->
+    <a class="card df" href="backend/Dockerfile" target="_blank">
+      <div class="icon-wrap">📦</div>
+      <div class="card-info">
+        <div class="card-title">Backend Dockerfile</div>
+        <div class="card-desc">backend/Dockerfile — Multi-stage build config</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <!-- 7. Database Init SQL -->
+    <a class="card sql" href="database/init.sql" target="_blank">
       <div class="icon-wrap">🗄️</div>
       <div class="card-info">
-        <div class="card-title">Database Init</div>
+        <div class="card-title">Database Init Script</div>
         <div class="card-desc">database/init.sql — Schema · Seed data</div>
       </div>
       <div class="arrow">→</div>
