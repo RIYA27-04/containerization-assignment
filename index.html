@@ -1,1053 +1,358 @@
 <!DOCTYPE html>
-<<<<<<< HEAD
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Assignment 1 — FastAPI & PostgreSQL with Docker</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<title>Containerization & DevOps — Quick Access</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #0a0a0f;
-  --surface: #111118;
-  --surface2: #18181f;
-  --border: rgba(255,255,255,0.07);
-  --border2: rgba(255,255,255,0.12);
-  --text: #e8e8f0;
-  --muted: #6b6b80;
-  --accent: #00e5a0;
-  --accent2: #4d9fff;
-  --accent3: #ff6b6b;
-  --amber: #ffb347;
-  --font-display: 'Syne', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-mono);
-  font-size: 14px;
-  line-height: 1.7;
-  min-height: 100vh;
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── NOISE OVERLAY ── */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.4;
-}
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --accent3: #10b981;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --card-bg: #0f172a;
+  }
 
-/* ── HEADER ── */
-.header {
-  position: relative;
-  border-bottom: 1px solid var(--border);
-  padding: 3rem 4rem 2.5rem;
-  overflow: hidden;
-}
-.header::before {
-  content: '';
-  position: absolute;
-  top: -60px; right: -60px;
-  width: 320px; height: 320px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(0,229,160,0.08) 0%, transparent 70%);
-  pointer-events: none;
-}
-.header-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-.badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
-.badge {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  padding: 4px 10px;
-  border-radius: 3px;
-  border: 1px solid;
-}
-.badge-green { color: var(--accent); border-color: rgba(0,229,160,0.3); background: rgba(0,229,160,0.06); }
-.badge-blue { color: var(--accent2); border-color: rgba(77,159,255,0.3); background: rgba(77,159,255,0.06); }
-.badge-amber { color: var(--amber); border-color: rgba(255,179,71,0.3); background: rgba(255,179,71,0.06); }
-.title {
-  font-family: var(--font-display);
-  font-size: clamp(22px, 4vw, 38px);
-  font-weight: 800;
-  line-height: 1.15;
-  max-width: 680px;
-  letter-spacing: -0.02em;
-}
-.title span { color: var(--accent); }
-.meta-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-  gap: 1px;
-  background: var(--border);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  overflow: hidden;
-  margin-top: 2rem;
-}
-.meta-cell {
-  background: var(--surface);
-  padding: .75rem 1.25rem;
-}
-.meta-label { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
-.meta-value { font-size: 13px; font-weight: 500; color: var(--text); }
+  html { scroll-behavior: smooth; }
 
-/* ── NAV ── */
-.nav {
-  position: sticky;
-  top: 0;
-  background: rgba(10,10,15,0.92);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-  padding: 0 4rem;
-  display: flex;
-  gap: 0;
-  z-index: 100;
-  overflow-x: auto;
-}
-.nav-btn {
-  background: none;
-  border: none;
-  color: var(--muted);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  padding: 1rem 1.25rem;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: color .2s, border-color .2s;
-  white-space: nowrap;
-}
-.nav-btn:hover { color: var(--text); }
-.nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-/* ── MAIN ── */
-main { padding: 3rem 4rem; max-width: 1100px; }
+  /* Animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
 
-/* ── SECTIONS ── */
-.section { display: none; animation: fadeIn .25s ease; }
-.section.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  /* Glow orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+    animation: drift 12s ease-in-out infinite alternate;
+  }
+  .orb1 { width: 500px; height: 500px; background: rgba(0,212,255,0.06); top: -150px; right: -100px; }
+  .orb2 { width: 400px; height: 400px; background: rgba(124,58,237,0.07); bottom: -100px; left: -100px; animation-delay: -6s; }
 
-.section-head {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 2rem;
-}
-.section-num {
-  font-family: var(--font-display);
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--accent);
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
-.section-title {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-.section-line { flex: 1; height: 1px; background: var(--border); }
+  @keyframes drift {
+    from { transform: translate(0, 0); }
+    to { transform: translate(30px, 40px); }
+  }
 
-/* ── CARDS ── */
-.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 2.5rem; }
-.card { background: var(--surface); padding: 1.25rem; transition: background .15s; }
-.card:hover { background: var(--surface2); }
-.card-label { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
-.card-value { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
-.card-sub { font-size: 11px; color: var(--muted); }
-.card-value.green { color: var(--accent); }
-.card-value.blue { color: var(--accent2); }
-.card-value.amber { color: var(--amber); }
-.card-value.red { color: var(--accent3); }
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 60px 24px 80px;
+  }
 
-/* ── ARCH DIAGRAM ── */
-.arch {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 2rem;
-  margin-bottom: 2.5rem;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  align-items: center;
-}
-.arch-diagram { font-family: var(--font-mono); font-size: 12.5px; line-height: 2; }
-.arch-diagram .g { color: var(--accent); }
-.arch-diagram .b { color: var(--accent2); }
-.arch-diagram .a { color: var(--amber); }
-.arch-diagram .dim { color: var(--muted); }
-.arch-legend { display: flex; flex-direction: column; gap: 12px; }
-.leg-item { display: flex; align-items: center; gap: 10px; }
-.leg-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
-.leg-text { font-size: 12px; color: var(--muted); }
-.leg-text strong { color: var(--text); font-weight: 500; }
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 64px;
+    animation: fadeUp 0.8s ease both;
+  }
 
-/* ── STEPS ── */
-.steps { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 2.5rem; }
-.step { display: flex; gap: 1.25rem; padding: 1.5rem; border-bottom: 1px solid var(--border); background: var(--surface); transition: background .15s; }
-.step:last-child { border-bottom: none; }
-.step:hover { background: var(--surface2); }
-.step-num {
-  width: 32px; height: 32px;
-  border-radius: 6px;
-  background: rgba(0,229,160,0.08);
-  border: 1px solid rgba(0,229,160,0.2);
-  color: var(--accent);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 700;
-  flex-shrink: 0;
-}
-.step-body {}
-.step-title { font-weight: 700; font-size: 13px; margin-bottom: 4px; color: var(--text); }
-.step-desc { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 8px; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
 
-/* ── CODE ── */
-.code {
-  background: #0d0d14;
-  border: 1px solid var(--border2);
-  border-radius: 6px;
-  padding: .75rem 1rem;
-  font-family: var(--font-mono);
-  font-size: 12px;
-  line-height: 1.8;
-  color: #c8c8d8;
-  overflow-x: auto;
-  white-space: pre;
-  margin-top: 8px;
-}
-.code .cmd { color: var(--accent); }
-.code .flag { color: var(--accent2); }
-.code .val { color: var(--amber); }
-.code .cmt { color: var(--muted); font-style: italic; }
-.code-block-full {
-  background: #0d0d14;
-  border: 1px solid var(--border2);
-  border-radius: 8px;
-  overflow: hidden;
-  margin-bottom: 2rem;
-}
-.code-header {
-  background: var(--surface2);
-  border-bottom: 1px solid var(--border);
-  padding: .5rem 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.code-filename { font-size: 11px; color: var(--accent2); letter-spacing: .04em; }
-.code-lang { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
-.code-body { padding: 1.25rem; font-size: 12px; line-height: 1.9; overflow-x: auto; white-space: pre; color: #c8c8d8; }
-.kw { color: #c792ea; }
-.str { color: #c3e88d; }
-.fn { color: #82aaff; }
-.num { color: var(--amber); }
-.cm { color: #546e7a; font-style: italic; }
-.dec { color: var(--accent); }
+  .badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s ease infinite;
+  }
 
-/* ── TABLE ── */
-.table-wrap { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 2.5rem; overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; }
-th { background: var(--surface2); padding: .65rem 1rem; text-align: left; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); white-space: nowrap; }
-td { padding: .65rem 1rem; border-bottom: 1px solid var(--border); font-size: 12px; color: var(--text); }
-tr:last-child td { border-bottom: none; }
-tr:hover td { background: var(--surface2); }
-.tick { color: var(--accent); font-weight: 700; }
-.cross { color: var(--accent3); font-weight: 700; }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
 
-/* ── API ENDPOINTS ── */
-.endpoints { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 2.5rem; }
-.endpoint { background: var(--surface); padding: 1.25rem 1.5rem; display: flex; gap: 1rem; align-items: flex-start; transition: background .15s; }
-.endpoint:hover { background: var(--surface2); }
-.method-badge { font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 3px; flex-shrink: 0; margin-top: 3px; letter-spacing: .06em; }
-.get { background: rgba(0,229,160,0.1); color: var(--accent); border: 1px solid rgba(0,229,160,0.25); }
-.post { background: rgba(77,159,255,0.1); color: var(--accent2); border: 1px solid rgba(77,159,255,0.25); }
-.ep-path { font-weight: 700; font-size: 14px; color: var(--text); margin-bottom: 4px; }
-.ep-desc { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
-.ep-response { background: #0d0d14; border: 1px solid var(--border2); border-radius: 4px; padding: .5rem .75rem; font-size: 11px; color: var(--accent); white-space: pre; overflow-x: auto; }
+  h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
 
-/* ── CONCLUSION ── */
-.conclusion-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-bottom: 2.5rem; }
-.conclusion-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; display: flex; gap: 10px; align-items: flex-start; }
-.check-icon { width: 20px; height: 20px; border-radius: 4px; background: rgba(0,229,160,0.1); border: 1px solid rgba(0,229,160,0.25); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--accent); flex-shrink: 0; margin-top: 1px; }
-.conclusion-text { font-size: 12px; line-height: 1.6; color: var(--muted); }
-.conclusion-text strong { color: var(--text); font-weight: 600; display: block; margin-bottom: 2px; }
+  h1 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
 
-/* ── FOOTER ── */
-footer {
-  border-top: 1px solid var(--border);
-  padding: 1.5rem 4rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 1rem;
-  font-size: 11px;
-  color: var(--muted);
-}
-.footer-pills { display: flex; gap: 8px; flex-wrap: wrap; }
-.fpill { padding: 3px 10px; border-radius: 3px; border: 1px solid var(--border2); font-size: 10px; letter-spacing: .06em; }
+  .subtitle {
+    color: var(--muted);
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.6;
+    font-family: 'Space Mono', monospace;
+  }
 
-@media (max-width: 768px) {
-  .header, main, footer { padding-left: 1.5rem; padding-right: 1.5rem; }
-  .nav { padding: 0 1.5rem; }
-  .arch { grid-template-columns: 1fr; }
-}
+  /* Section label */
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    margin-bottom: 20px;
+    padding-left: 4px;
+    animation: fadeUp 0.8s ease 0.2s both;
+  }
+
+  /* Cards grid */
+  .cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    animation: fadeUp 0.8s ease 0.3s both;
+  }
+
+  .card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    text-decoration: none;
+    color: var(--text);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(255,255,255,0.02));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .card::after {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 0 2px 2px 0;
+    background: var(--card-accent, var(--accent));
+    transform: scaleY(0);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: center;
+  }
+
+  .card:hover {
+    border-color: var(--card-accent, var(--accent));
+    transform: translateX(6px);
+    box-shadow: -4px 0 30px rgba(0,212,255,0.08), 0 8px 32px rgba(0,0,0,0.3);
+  }
+
+  .card:hover::before { opacity: 1; }
+  .card:hover::after { transform: scaleY(1); }
+
+  /* Card colors */
+  .card.web  { --card-accent: #00d4ff; }
+  .card.doc  { --card-accent: #10b981; }
+  .card.docker { --card-accent: #3b82f6; }
+  .card.py   { --card-accent: #f59e0b; }
+  .card.sql  { --card-accent: #a855f7; }
+
+  .card:hover.web  { box-shadow: -4px 0 30px rgba(0,212,255,0.1), 0 8px 32px rgba(0,0,0,0.3); }
+  .card:hover.doc  { box-shadow: -4px 0 30px rgba(16,185,129,0.1), 0 8px 32px rgba(0,0,0,0.3); }
+  .card:hover.docker { box-shadow: -4px 0 30px rgba(59,130,246,0.1), 0 8px 32px rgba(0,0,0,0.3); }
+  .card:hover.py   { box-shadow: -4px 0 30px rgba(245,158,11,0.1), 0 8px 32px rgba(0,0,0,0.3); }
+  .card:hover.sql  { box-shadow: -4px 0 30px rgba(168,85,247,0.1), 0 8px 32px rgba(0,0,0,0.3); }
+
+  .icon-wrap {
+    width: 48px; height: 48px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    transition: transform 0.3s;
+  }
+
+  .card:hover .icon-wrap { transform: scale(1.08) rotate(-3deg); }
+
+  .card-info { flex: 1; min-width: 0; }
+
+  .card-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .card-desc {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .arrow {
+    color: var(--muted);
+    font-size: 18px;
+    transition: all 0.3s;
+    flex-shrink: 0;
+  }
+
+  .card:hover .arrow {
+    color: var(--card-accent, var(--accent));
+    transform: translateX(4px);
+  }
+
+  /* Footer */
+  .footer {
+    margin-top: 60px;
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    animation: fadeUp 0.8s ease 0.5s both;
+  }
+
+  .footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border), transparent);
+    margin: 40px 0;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Staggered card animations */
+  .card:nth-child(1) { animation: fadeUp 0.6s ease 0.35s both; }
+  .card:nth-child(2) { animation: fadeUp 0.6s ease 0.45s both; }
+  .card:nth-child(3) { animation: fadeUp 0.6s ease 0.55s both; }
+  .card:nth-child(4) { animation: fadeUp 0.6s ease 0.65s both; }
+  .card:nth-child(5) { animation: fadeUp 0.6s ease 0.75s both; }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
-<header class="header">
-  <div class="badge-row">
-    <span class="badge badge-green">Assignment 1</span>
-    <span class="badge badge-blue">Docker Compose</span>
-    <span class="badge badge-amber">IPvlan Networking</span>
-  </div>
-  <h1 class="title">FastAPI & PostgreSQL Deployment<br>with <span>Docker Compose</span> and IPvlan Networking</h1>
-  <div class="meta-grid">
-    <div class="meta-cell">
-      <div class="meta-label">Name</div>
-      <div class="meta-value">____________________</div>
-    </div>
-    <div class="meta-cell">
-      <div class="meta-label">SAP ID</div>
-      <div class="meta-value">____________________</div>
-    </div>
-    <div class="meta-cell">
-      <div class="meta-label">Batch</div>
-      <div class="meta-value">____________________</div>
-    </div>
-    <div class="meta-cell">
-      <div class="meta-label">Subject</div>
-      <div class="meta-value">Containerization & DevOps</div>
-    </div>
-  </div>
-</header>
-
-<!-- NAV -->
-<nav class="nav">
-  <button class="nav-btn active" onclick="showSection('overview')">Overview</button>
-  <button class="nav-btn" onclick="showSection('setup')">Setup</button>
-  <button class="nav-btn" onclick="showSection('code')">Source Code</button>
-  <button class="nav-btn" onclick="showSection('api')">API Docs</button>
-  <button class="nav-btn" onclick="showSection('compare')">Comparison</button>
-  <button class="nav-btn" onclick="showSection('conclusion')">Conclusion</button>
-</nav>
-
-<!-- MAIN -->
-<main>
-
-  <!-- OVERVIEW -->
-  <section class="section active" id="sec-overview">
-    <div class="section-head">
-      <span class="section-num">01</span>
-      <h2 class="section-title">Project Overview</h2>
-      <div class="section-line"></div>
-    </div>
-
-    <div class="cards">
-      <div class="card">
-        <div class="card-label">Backend</div>
-        <div class="card-value green">FastAPI</div>
-        <div class="card-sub">Python 3.11-slim · async</div>
-      </div>
-      <div class="card">
-        <div class="card-label">Database</div>
-        <div class="card-value blue">PostgreSQL 15</div>
-        <div class="card-sub">Alpine image · 85 MB</div>
-      </div>
-      <div class="card">
-        <div class="card-label">Orchestration</div>
-        <div class="card-value amber">Docker Compose</div>
-        <div class="card-sub">Health checks · restart policies</div>
-      </div>
-      <div class="card">
-        <div class="card-label">Networking</div>
-        <div class="card-value green">IPvlan L2</div>
-        <div class="card-sub">Static IPs on host subnet</div>
-      </div>
-      <div class="card">
-        <div class="card-label">Build Strategy</div>
-        <div class="card-value blue">Multi-stage</div>
-        <div class="card-sub">150 MB vs 1 GB standard</div>
-      </div>
-      <div class="card">
-        <div class="card-label">Security</div>
-        <div class="card-value amber">Non-root user</div>
-        <div class="card-sub">appuser · hardened</div>
-      </div>
-    </div>
-
-    <div class="arch">
-      <div class="arch-diagram"><span class="dim">Client (Browser / Postman)</span>
-          │
-          │ HTTP Requests
-          ▼
-<span class="g">Backend Container (FastAPI)</span>
-<span class="g">IP: 172.22.208.11  Port: 8000</span>
-<span class="dim">Image: python:3.11-slim</span>
-          │
-          │ PostgreSQL via IPvlan Static IP
-          ▼
-<span class="b">Database Container (PostgreSQL 15)</span>
-<span class="b">IP: 172.22.208.10  Port: 5432</span>
-<span class="dim">Image: postgres:15-alpine</span>
-          │
-          ▼
-<span class="a">Docker Named Volume (pgdata)</span>
-<span class="dim">Persistent storage — survives restarts</span></div>
-      <div class="arch-legend">
-        <div class="leg-item"><div class="leg-dot" style="background:var(--accent)"></div><div class="leg-text"><strong>Backend (FastAPI)</strong> — static IP 172.22.208.11, port 8000, multi-stage build</div></div>
-        <div class="leg-item"><div class="leg-dot" style="background:var(--accent2)"></div><div class="leg-text"><strong>Database (PostgreSQL)</strong> — static IP 172.22.208.10, port 5432, alpine base</div></div>
-        <div class="leg-item"><div class="leg-dot" style="background:var(--amber)"></div><div class="leg-text"><strong>Named Volume (pgdata)</strong> — persists data across container restarts</div></div>
-        <div class="leg-item"><div class="leg-dot" style="background:var(--muted)"></div><div class="leg-text"><strong>IPvlan Network</strong> — containers share host MAC, static IPs on host subnet</div></div>
-      </div>
-    </div>
-
-    <div class="table-wrap">
-      <table>
-        <tr><th>Component</th><th>Technology</th><th>Why</th></tr>
-        <tr><td>Backend</td><td style="color:var(--accent)">FastAPI (Python 3.11)</td><td>Async, modern, auto API docs at /docs</td></tr>
-        <tr><td>Database</td><td style="color:var(--accent2)">PostgreSQL 15 Alpine</td><td>Lighter than standard postgres:15</td></tr>
-        <tr><td>Build</td><td style="color:var(--amber)">Multi-stage (builder + runtime)</td><td>Final image ~150 MB vs ~1 GB</td></tr>
-        <tr><td>Networking</td><td style="color:var(--accent)">IPvlan</td><td>More scalable than Macvlan in VMs</td></tr>
-        <tr><td>Security</td><td style="color:var(--accent2)">Non-root user (appuser)</td><td>Hardened container, follows best practices</td></tr>
-        <tr><td>DB Init</td><td style="color:var(--amber)">Dockerfile + init.sql</td><td>Custom image, auto schema on first startup</td></tr>
-      </table>
-    </div>
-  </section>
-
-  <!-- SETUP -->
-  <section class="section" id="sec-setup">
-    <div class="section-head">
-      <span class="section-num">02</span>
-      <h2 class="section-title">Step-by-Step Setup</h2>
-      <div class="section-line"></div>
-    </div>
-
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-body">
-          <div class="step-title">Create project directory structure</div>
-          <div class="step-desc">Create the main working directory and subdirectories for backend, database, and screenshots.</div>
-          <div class="code"><span class="cmd">mkdir</span> containerized-webapp
-<span class="cmd">cd</span> containerized-webapp
-<span class="cmd">mkdir</span> backend database screenshots</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-body">
-          <div class="step-title">Create all project files</div>
-          <div class="step-desc">Create app.py, requirements.txt, Dockerfiles, init.sql, docker-compose.yml and .gitignore.</div>
-          <div class="code"><span class="cmd">nano</span> backend/app.py
-<span class="cmd">nano</span> backend/requirements.txt
-<span class="cmd">nano</span> backend/Dockerfile
-<span class="cmd">nano</span> backend/.dockerignore
-<span class="cmd">nano</span> database/Dockerfile
-<span class="cmd">nano</span> database/init.sql
-<span class="cmd">nano</span> docker-compose.yml</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-body">
-          <div class="step-title">Create IPvlan network</div>
-          <div class="step-desc">IPvlan shares the host MAC address — more scalable than Macvlan in virtualized/cloud environments. Must be created before running compose.</div>
-          <div class="code"><span class="cmd">docker network create</span> <span class="flag">-d</span> ipvlan \
-  <span class="flag">--subnet=</span><span class="val">172.22.208.0/24</span> \
-  <span class="flag">--gateway=</span><span class="val">172.22.208.1</span> \
-  <span class="flag">-o</span> <span class="val">ipvlan_mode=l2</span> \
-  <span class="flag">-o</span> <span class="val">parent=eth0</span> mynetwork</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">4</div>
-        <div class="step-body">
-          <div class="step-title">Verify network creation</div>
-          <div class="step-desc">Confirm the IPvlan network appears in the list and inspect its configuration.</div>
-          <div class="code"><span class="cmd">docker network ls</span>
-<span class="cmd">docker network inspect</span> mynetwork</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">5</div>
-        <div class="step-body">
-          <div class="step-title">Build and start all containers</div>
-          <div class="step-desc">Docker Compose builds both images and starts containers. Backend waits for DB health check before starting.</div>
-          <div class="code"><span class="cmd">docker compose up</span> <span class="flag">--build</span></div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">6</div>
-        <div class="step-body">
-          <div class="step-title">Verify running containers and static IPs</div>
-          <div class="step-desc">Confirm both containers are up and assigned their correct static IP addresses.</div>
-          <div class="code"><span class="cmd">docker ps</span>
-<span class="cmd">docker inspect</span> backend_api | grep IPAddress
-<span class="cmd">docker inspect</span> postgres_db | grep IPAddress</div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">7</div>
-        <div class="step-body">
-          <div class="step-title">Test API endpoints</div>
-          <div class="step-desc">Run health check, insert a record via POST, then fetch all records via GET.</div>
-          <div class="code"><span class="cmt"># Health check</span>
-<span class="cmd">docker exec</span> backend_api python3 -c <span class="val">"import urllib.request; print(urllib.request.urlopen('http://localhost:8000/health').read().decode())"</span>
-
-<span class="cmt"># Insert record (POST)</span>
-<span class="cmd">docker exec</span> backend_api python3 -c <span class="val">"
-import urllib.request, json
-data = json.dumps({'data': 'Hello World'}).encode()
-req = urllib.request.Request('http://localhost:8000/api/records',
-  data=data, headers={'Content-Type': 'application/json'})
-print(urllib.request.urlopen(req).read().decode())"</span>
-
-<span class="cmt"># Fetch all records (GET)</span>
-<span class="cmd">docker exec</span> backend_api python3 -c <span class="val">"import urllib.request; print(urllib.request.urlopen('http://localhost:8000/api/records').read().decode())"</span></div>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">8</div>
-        <div class="step-body">
-          <div class="step-title">Test volume persistence</div>
-          <div class="step-desc">Stop containers, restart them, and verify data survives — confirming named volume works correctly.</div>
-          <div class="code"><span class="cmd">docker compose down</span>
-<span class="cmd">docker compose up</span> <span class="flag">-d</span>
-<span class="cmd">docker volume ls</span>
-<span class="cmt"># Fetch records again — data should still exist</span></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- SOURCE CODE -->
-  <section class="section" id="sec-code">
-    <div class="section-head">
-      <span class="section-num">03</span>
-      <h2 class="section-title">Source Code</h2>
-      <div class="section-line"></div>
-    </div>
-
-    <div class="code-block-full">
-      <div class="code-header">
-        <span class="code-filename">backend/app.py</span>
-        <span class="code-lang">Python</span>
-      </div>
-      <div class="code-body"><span class="kw">from</span> fastapi <span class="kw">import</span> FastAPI
-<span class="kw">from</span> pydantic <span class="kw">import</span> BaseModel
-<span class="kw">import</span> psycopg2, os, time
-
-app = <span class="fn">FastAPI</span>(title=<span class="str">"Containerized Web App"</span>, version=<span class="str">"1.0.0"</span>)
-
-DB_HOST = os.getenv(<span class="str">"DB_HOST"</span>, <span class="str">"db"</span>)
-DB_PORT = os.getenv(<span class="str">"DB_PORT"</span>, <span class="str">"5432"</span>)
-DB_NAME = os.getenv(<span class="str">"DB_NAME"</span>, <span class="str">"appdb"</span>)
-DB_USER = os.getenv(<span class="str">"DB_USER"</span>, <span class="str">"shreya"</span>)
-DB_PASS = os.getenv(<span class="str">"DB_PASS"</span>, <span class="str">"shreya123"</span>)
-
-<span class="kw">def</span> <span class="fn">get_connection</span>():
-    retries = <span class="num">5</span>
-    <span class="kw">while</span> retries > <span class="num">0</span>:
-        <span class="kw">try</span>:
-            conn = psycopg2.<span class="fn">connect</span>(host=DB_HOST, port=DB_PORT,
-                dbname=DB_NAME, user=DB_USER, password=DB_PASS)
-            <span class="kw">return</span> conn
-        <span class="kw">except</span> psycopg2.OperationalError:
-            retries -= <span class="num">1</span>
-            time.<span class="fn">sleep</span>(<span class="num">2</span>)
-    <span class="kw">raise</span> <span class="fn">Exception</span>(<span class="str">"Could not connect to database."</span>)
-
-<span class="dec">@app.on_event</span>(<span class="str">"startup"</span>)
-<span class="kw">def</span> <span class="fn">startup_event</span>():
-    conn = <span class="fn">get_connection</span>()
-    cur = conn.<span class="fn">cursor</span>()
-    cur.<span class="fn">execute</span>(<span class="str">"""CREATE TABLE IF NOT EXISTS records (
-        id SERIAL PRIMARY KEY,
-        data TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )"""</span>)
-    conn.<span class="fn">commit</span>(); cur.<span class="fn">close</span>(); conn.<span class="fn">close</span>()
-
-<span class="kw">class</span> <span class="fn">RecordIn</span>(BaseModel):
-    data: str
-
-<span class="dec">@app.get</span>(<span class="str">"/health"</span>)
-<span class="kw">def</span> <span class="fn">health_check</span>():
-    <span class="kw">return</span> {<span class="str">"status"</span>: <span class="str">"healthy"</span>, <span class="str">"service"</span>: <span class="str">"fastapi-backend"</span>}
-
-<span class="dec">@app.post</span>(<span class="str">"/api/records"</span>)
-<span class="kw">def</span> <span class="fn">insert_record</span>(record: RecordIn):
-    conn = <span class="fn">get_connection</span>()
-    cur = conn.<span class="fn">cursor</span>()
-    cur.<span class="fn">execute</span>(<span class="str">"INSERT INTO records (data) VALUES (%s) RETURNING id"</span>, (record.data,))
-    new_id = cur.<span class="fn">fetchone</span>()[<span class="num">0</span>]
-    conn.<span class="fn">commit</span>(); cur.<span class="fn">close</span>(); conn.<span class="fn">close</span>()
-    <span class="kw">return</span> {<span class="str">"message"</span>: <span class="str">"Record inserted successfully"</span>, <span class="str">"id"</span>: new_id}
-
-<span class="dec">@app.get</span>(<span class="str">"/api/records"</span>)
-<span class="kw">def</span> <span class="fn">fetch_records</span>():
-    conn = <span class="fn">get_connection</span>()
-    cur = conn.<span class="fn">cursor</span>()
-    cur.<span class="fn">execute</span>(<span class="str">"SELECT id, data, created_at FROM records ORDER BY id"</span>)
-    rows = cur.<span class="fn">fetchall</span>()
-    cur.<span class="fn">close</span>(); conn.<span class="fn">close</span>()
-    <span class="kw">return</span> [{<span class="str">"id"</span>: r[<span class="num">0</span>], <span class="str">"data"</span>: r[<span class="num">1</span>], <span class="str">"created_at"</span>: <span class="fn">str</span>(r[<span class="num">2</span>])} <span class="kw">for</span> r <span class="kw">in</span> rows]</div>
-    </div>
-
-    <div class="code-block-full">
-      <div class="code-header">
-        <span class="code-filename">backend/Dockerfile</span>
-        <span class="code-lang">Dockerfile · Multi-stage</span>
-      </div>
-      <div class="code-body"><span class="cm"># Stage 1: Builder — installs all dependencies</span>
-<span class="kw">FROM</span> python:3.11-slim <span class="kw">AS</span> builder
-<span class="kw">WORKDIR</span> /build
-<span class="kw">COPY</span> requirements.txt .
-<span class="kw">RUN</span> pip install --upgrade pip && \
-    pip install --prefix=/install --no-cache-dir -r requirements.txt
-
-<span class="cm"># Stage 2: Runtime — copies only what is needed</span>
-<span class="kw">FROM</span> python:3.11-slim <span class="kw">AS</span> runtime
-<span class="kw">WORKDIR</span> /app
-<span class="kw">COPY</span> --from=builder /install /usr/local
-<span class="kw">COPY</span> app.py .
-
-<span class="cm"># Create non-root user for security</span>
-<span class="kw">RUN</span> addgroup --system appgroup && \
-    adduser --system --ingroup appgroup appuser
-<span class="kw">USER</span> appuser
-<span class="kw">EXPOSE</span> 8000
-<span class="kw">CMD</span> ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]</div>
-    </div>
-
-    <div class="code-block-full">
-      <div class="code-header">
-        <span class="code-filename">docker-compose.yml</span>
-        <span class="code-lang">YAML</span>
-      </div>
-      <div class="code-body"><span class="kw">version:</span> <span class="str">"3.9"</span>
-
-<span class="kw">services:</span>
-
-  <span class="fn">db:</span>
-    build:
-      context: ./database
-      dockerfile: Dockerfile
-    container_name: postgres_db
-    environment:
-      POSTGRES_USER: shreya
-      POSTGRES_PASSWORD: shreya123
-      POSTGRES_DB: appdb
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    networks:
-      mynetwork:
-        ipv4_address: <span class="val">172.22.208.10</span>
-    restart: unless-stopped
-    healthcheck:
-      test: <span class="str">["CMD-SHELL", "pg_isready -U shreya -d appdb"]</span>
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  <span class="fn">backend:</span>
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: backend_api
-    environment:
-      DB_HOST: <span class="val">172.22.208.10</span>
-      DB_PORT: 5432
-      DB_NAME: appdb
-      DB_USER: shreya
-      DB_PASS: shreya123
-    ports:
-      - <span class="str">"8000:8000"</span>
-    networks:
-      mynetwork:
-        ipv4_address: <span class="val">172.22.208.11</span>
-    depends_on:
-      db:
-        condition: service_healthy
-    restart: unless-stopped
-
-<span class="kw">volumes:</span>
-  pgdata:
-    name: containerized-webapp_pgdata
-
-<span class="kw">networks:</span>
-  mynetwork:
-    external: <span class="kw">true</span></div>
-    </div>
-
-    <div class="code-block-full">
-      <div class="code-header">
-        <span class="code-filename">database/init.sql</span>
-        <span class="code-lang">SQL</span>
-      </div>
-      <div class="code-body"><span class="kw">DO</span> $$ <span class="kw">BEGIN</span>
-  <span class="kw">CREATE USER</span> shreya <span class="kw">WITH PASSWORD</span> <span class="str">'shreya123'</span>;
-<span class="kw">EXCEPTION WHEN</span> duplicate_object <span class="kw">THEN</span>
-  <span class="kw">RAISE NOTICE</span> <span class="str">'User already exists, skipping.'</span>;
-<span class="kw">END</span> $$;
-
-<span class="kw">GRANT ALL PRIVILEGES ON DATABASE</span> appdb <span class="kw">TO</span> shreya;
-\connect appdb;
-
-<span class="kw">CREATE TABLE IF NOT EXISTS</span> records (
-    id <span class="kw">SERIAL PRIMARY KEY</span>,
-    data <span class="kw">TEXT NOT NULL</span>,
-    created_at <span class="kw">TIMESTAMP DEFAULT</span> CURRENT_TIMESTAMP
-);
-
-<span class="kw">GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA</span> public <span class="kw">TO</span> shreya;
-<span class="kw">GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA</span> public <span class="kw">TO</span> shreya;</div>
-    </div>
-  </section>
-
-  <!-- API -->
-  <section class="section" id="sec-api">
-    <div class="section-head">
-      <span class="section-num">04</span>
-      <h2 class="section-title">API Documentation</h2>
-      <div class="section-line"></div>
-    </div>
-
-    <div class="endpoints">
-      <div class="endpoint">
-        <div class="method-badge get">GET</div>
-        <div>
-          <div class="ep-path">/health</div>
-          <div class="ep-desc">Health check endpoint — used by Docker Compose healthcheck to confirm the service is running.</div>
-          <div class="ep-response">{"status": "healthy", "service": "fastapi-backend"}</div>
-        </div>
-      </div>
-      <div class="endpoint">
-        <div class="method-badge post">POST</div>
-        <div>
-          <div class="ep-path">/api/records</div>
-          <div class="ep-desc">Insert a new record into PostgreSQL. Accepts JSON body with a <code>data</code> field.</div>
-          <div class="ep-response">Request:  {"data": "Hello World"}
-Response: {"message": "Record inserted successfully", "id": 1}</div>
-        </div>
-      </div>
-      <div class="endpoint">
-        <div class="method-badge get">GET</div>
-        <div>
-          <div class="ep-path">/api/records</div>
-          <div class="ep-desc">Fetch all records from the database ordered by ID ascending.</div>
-          <div class="ep-response">[{"id": 1, "data": "Hello World", "created_at": "2024-01-01 10:00:00"}]</div>
-        </div>
-      </div>
-      <div class="endpoint">
-        <div class="method-badge get">GET</div>
-        <div>
-          <div class="ep-path">/docs</div>
-          <div class="ep-desc">Auto-generated interactive Swagger UI provided by FastAPI. Available at http://localhost:8000/docs</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section-head" style="margin-top:2rem">
-      <span class="section-num">—</span>
-      <h2 class="section-title">Docker Compose Features</h2>
-      <div class="section-line"></div>
-    </div>
-
-    <div class="table-wrap">
-      <table>
-        <tr><th>Feature</th><th>Purpose</th></tr>
-        <tr><td style="color:var(--accent)">depends_on: service_healthy</td><td>Backend waits for DB to be fully ready before starting</td></tr>
-        <tr><td style="color:var(--accent)">healthcheck on both services</td><td>Ensures containers are actually functional, not just running</td></tr>
-        <tr><td style="color:var(--accent2)">restart: unless-stopped</td><td>Auto-restarts on failure — production-ready behaviour</td></tr>
-        <tr><td style="color:var(--accent2)">external: true network</td><td>IPvlan network must be created manually before compose</td></tr>
-        <tr><td style="color:var(--amber)">Named volume pgdata</td><td>Data persists across complete container restarts</td></tr>
-        <tr><td style="color:var(--amber)">Environment variables</td><td>Passes DB credentials securely to containers at runtime</td></tr>
-      </table>
-    </div>
-  </section>
-
-  <!-- COMPARE -->
-  <section class="section" id="sec-compare">
-    <div class="section-head">
-      <span class="section-num">05</span>
-      <h2 class="section-title">Comparison & Optimization</h2>
-      <div class="section-line"></div>
-    </div>
-
-    <div class="section-head" style="margin-bottom:1rem; margin-top:0">
-      <span class="section-num">—</span>
-      <h2 class="section-title" style="font-size:15px">IPvlan vs Macvlan</h2>
-      <div class="section-line"></div>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <tr><th>Feature</th><th>Macvlan</th><th>IPvlan</th></tr>
-        <tr><td>MAC Address</td><td>Unique per container</td><td style="color:var(--accent)">Shared with host MAC</td></tr>
-        <tr><td>Network Load</td><td>Higher — switch tracks many MACs</td><td style="color:var(--accent)">Lower</td></tr>
-        <tr><td>Scalability</td><td>Limited by switch MAC table size</td><td style="color:var(--accent)">Highly scalable</td></tr>
-        <tr><td>Host Isolation</td><td>Host cannot reach containers</td><td style="color:var(--accent)">Host can communicate</td></tr>
-        <tr><td>Best Use Case</td><td>Small LAN / bare metal</td><td style="color:var(--accent)">✓ Cloud / VMs — used here</td></tr>
-      </table>
-    </div>
-
-    <div class="section-head" style="margin-bottom:1rem">
-      <span class="section-num">—</span>
-      <h2 class="section-title" style="font-size:15px">Image size optimization</h2>
-      <div class="section-line"></div>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <tr><th>Base Image</th><th>Size</th><th>Used</th></tr>
-        <tr><td>python:3.11</td><td>~1.0 GB</td><td><span class="cross">✗ Too large</span></td></tr>
-        <tr><td>python:3.11-slim (multi-stage)</td><td>~150 MB</td><td><span class="tick">✓ Backend</span></td></tr>
-        <tr><td>postgres:15</td><td>~400 MB</td><td><span class="cross">✗ Too large</span></td></tr>
-        <tr><td>postgres:15-alpine</td><td>~85 MB</td><td><span class="tick">✓ Database</span></td></tr>
-      </table>
-    </div>
-
-    <div class="section-head" style="margin-bottom:1rem">
-      <span class="section-num">—</span>
-      <h2 class="section-title" style="font-size:15px">Optimizations applied</h2>
-      <div class="section-line"></div>
-    </div>
-    <div class="table-wrap">
-      <table>
-        <tr><th>Optimization</th><th>What it does</th><th>Impact</th></tr>
-        <tr><td style="color:var(--accent)">Multi-stage build</td><td>Builder stage installs deps; runtime stage copies only result</td><td>~85% size reduction</td></tr>
-        <tr><td style="color:var(--accent2)">Slim/Alpine base images</td><td>Minimal OS layer — no unnecessary packages</td><td>150 MB vs 1 GB</td></tr>
-        <tr><td style="color:var(--amber)">.dockerignore</td><td>Excludes __pycache__, .env, .git from build context</td><td>Faster builds</td></tr>
-        <tr><td style="color:var(--accent)">Non-root user</td><td>appuser created and used in backend container</td><td>Security hardening</td></tr>
-        <tr><td style="color:var(--accent2)">Chained RUN commands</td><td>Combines commands to minimize image layers</td><td>Smaller image size</td></tr>
-      </table>
-    </div>
-  </section>
-
-  <!-- CONCLUSION -->
-  <section class="section" id="sec-conclusion">
-    <div class="section-head">
-      <span class="section-num">06</span>
-      <h2 class="section-title">Conclusion</h2>
-      <div class="section-line"></div>
-    </div>
-
-    <div class="conclusion-grid">
-      <div class="conclusion-item">
-        <div class="check-icon">✓</div>
-        <div class="conclusion-text"><strong>FastAPI Backend</strong>Modern Python API with POST, GET, and health endpoints. Auto-generated Swagger docs at /docs.</div>
-      </div>
-      <div class="conclusion-item">
-        <div class="check-icon">✓</div>
-        <div class="conclusion-text"><strong>PostgreSQL 15</strong>Custom Dockerfile with Alpine base and auto-init script. DB schema initialized on first startup.</div>
-      </div>
-      <div class="conclusion-item">
-        <div class="check-icon">✓</div>
-        <div class="conclusion-text"><strong>Multi-stage Docker build</strong>Final image reduced from ~1 GB to ~150 MB using slim base and builder/runtime separation.</div>
-      </div>
-      <div class="conclusion-item">
-        <div class="check-icon">✓</div>
-        <div class="conclusion-text"><strong>Docker Compose orchestration</strong>Health checks, restart policies, and depends_on ensure reliable container startup order.</div>
-      </div>
-      <div class="conclusion-item">
-        <div class="check-icon">✓</div>
-        <div class="conclusion-text"><strong>IPvlan networking</strong>Containers get static IPs — backend 172.22.208.11, database 172.22.208.10. Shared host MAC reduces switch load.</div>
-      </div>
-      <div class="conclusion-item">
-        <div class="check-icon">✓</div>
-        <div class="conclusion-text"><strong>Named volume persistence</strong>pgdata volume survives complete container restarts. Data confirmed present after docker compose down/up.</div>
-      </div>
-      <div class="conclusion-item">
-        <div class="check-icon">✓</div>
-        <div class="conclusion-text"><strong>Non-root user security</strong>appuser created and applied in backend container. Follows Docker security best practices.</div>
-      </div>
-      <div class="conclusion-item">
-        <div class="check-icon">✓</div>
-        <div class="conclusion-text"><strong>Auto schema creation</strong>DB table initialized on startup without any manual intervention using init.sql and on_event("startup").</div>
-      </div>
-    </div>
-
-    <div class="table-wrap">
-      <table>
-        <tr><th>Requirement</th><th>Implementation</th><th>Status</th></tr>
-        <tr><td>Containerized backend</td><td>FastAPI in python:3.11-slim container</td><td><span class="tick">✓ Done</span></td></tr>
-        <tr><td>Containerized database</td><td>PostgreSQL 15 in postgres:15-alpine container</td><td><span class="tick">✓ Done</span></td></tr>
-        <tr><td>Custom networking</td><td>IPvlan L2 with static IPs on host subnet</td><td><span class="tick">✓ Done</span></td></tr>
-        <tr><td>Data persistence</td><td>Docker named volume pgdata</td><td><span class="tick">✓ Done</span></td></tr>
-        <tr><td>Image optimization</td><td>Multi-stage build, alpine/slim bases, .dockerignore</td><td><span class="tick">✓ Done</span></td></tr>
-        <tr><td>Health monitoring</td><td>Healthcheck on both services, depends_on condition</td><td><span class="tick">✓ Done</span></td></tr>
-        <tr><td>Security</td><td>Non-root user, env vars for credentials</td><td><span class="tick">✓ Done</span></td></tr>
-      </table>
-    </div>
-  </section>
-
-</main>
-
-<footer>
-  <span>Containerization & DevOps — Assignment 1</span>
-  <div class="footer-pills">
-    <span class="fpill" style="color:var(--accent)">FastAPI</span>
-    <span class="fpill" style="color:var(--accent2)">PostgreSQL 15</span>
-    <span class="fpill" style="color:var(--amber)">Docker Compose</span>
-    <span class="fpill" style="color:var(--accent)">IPvlan</span>
-  </div>
-</footer>
-
-<script>
-function showSection(id) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('sec-' + id).classList.add('active');
-  event.target.classList.add('active');
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-</script>
-=======
-<html>
-<head>
-    <title>Containerization Assignment</title>
-
-    <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(to right, #4facfe, #00f2fe);
-        }
-
-        header {
-            text-align: center;
-            padding: 30px;
-            color: white;
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 40px;
-        }
-
-        .container {
-            width: 80%;
-            margin: auto;
-        }
-
-        .card {
-            background: white;
-            margin: 20px 0;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0px 5px 15px rgba(0,0,0,0.2);
-        }
-
-        h2 {
-            color: #333;
-        }
-
-        pre {
-            background: #1e1e1e;
-            color: #00ff9d;
-            padding: 15px;
-            border-radius: 10px;
-            overflow-x: auto;
-        }
-
-        footer {
-            text-align: center;
-            padding: 15px;
-            color: white;
-        }
-    </style>
-</head>
-
-<body>
-
-<header>
-    <h1>🚀 Containerization & DevOps</h1>
-    <p>Assignment 1 | Docker Basics</p>
-</header>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
 
 <div class="container">
 
-    <div class="card">
-        <h2>📌 Introduction</h2>
-        <p>
-            Containerization is a lightweight virtualization technology that allows
-            applications to run in isolated environments using Docker.
-        </p>
-    </div>
+  <div class="header">
+    <div class="badge">Assignment — Docker & Networking</div>
+    <h1>Containerization<br>& <span>DevOps</span></h1>
+    <p class="subtitle">FastAPI · PostgreSQL · Docker Compose · IPvlan</p>
+  </div>
 
-    <div class="card">
-        <h2>🐳 Docker Commands</h2>
-        <pre>
-docker run hello-world
-docker pull ubuntu
-docker run -it ubuntu
-docker ps
-docker ps -a
-docker stop &lt;container_id&gt;
-docker rm &lt;container_id&gt;
-        </pre>
-    </div>
+  <div class="section-label">📂 Quick Access</div>
 
-    <div class="card">
-        <h2>⚙️ Dockerfile</h2>
-        <pre>
-FROM ubuntu
-RUN apt update
-CMD ["echo", "Hello from Docker"]
-        </pre>
-    </div>
+  <div class="cards">
 
-    <div class="card">
-        <h2>📸 Output Screenshots</h2>
-        <p>Add screenshots here to show execution results.</p>
-    </div>
+    <a class="card web" href="https://shreya172004.github.io/Containerization_and_DevOps/" target="_blank">
+      <div class="icon-wrap">🌐</div>
+      <div class="card-info">
+        <div class="card-title">Interactive Project Page</div>
+        <div class="card-desc">Live site — Overview · Setup · API · Comparison</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>
 
-    <div class="card">
-        <h2>📊 Docker vs Virtual Machine</h2>
-        <ul>
-            <li>Docker is lightweight</li>
-            <li>VM uses full OS</li>
-            <li>Docker is faster</li>
-        </ul>
-    </div>
+    <a class="card doc" href="https://shreya172004.github.io/Containerization_and_DevOps/ASSIGNMENT1/REPORT.html" target="_blank">
+      <div class="icon-wrap">📄</div>
+      <div class="card-info">
+        <div class="card-title">Full Report</div>
+        <div class="card-desc">REPORT.html — Architecture · Analysis · Conclusion</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>
 
-    <div class="card">
-        <h2>✅ Conclusion</h2>
-        <p>
-            Docker simplifies deployment, improves scalability, and enables
-            consistent environments across systems.
-        </p>
-    </div>
+    <a class="card docker" href="https://shreya172004.github.io/Containerization_and_DevOps/docker-compose.yml" target="_blank">
+      <div class="icon-wrap">🐳</div>
+      <div class="card-info">
+        <div class="card-title">Docker Compose File</div>
+        <div class="card-desc">docker-compose.yml — Services · Networks · Volumes</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card py" href="https://shreya172004.github.io/Containerization_and_DevOps/backend/app.py" target="_blank">
+      <div class="icon-wrap">🐍</div>
+      <div class="card-info">
+        <div class="card-title">Backend Code</div>
+        <div class="card-desc">backend/app.py — FastAPI application source</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+    <a class="card sql" href="https://shreya172004.github.io/Containerization_and_DevOps/database/init.sql" target="_blank">
+      <div class="icon-wrap">🗄️</div>
+      <div class="card-info">
+        <div class="card-title">Database Init</div>
+        <div class="card-desc">database/init.sql — Schema · Seed data</div>
+      </div>
+      <div class="arrow">→</div>
+    </a>
+
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="footer">
+    Hosted on <a href="https://pages.github.com" target="_blank">GitHub Pages</a> &nbsp;·&nbsp;
+    Containerization & DevOps Assignment
+  </div>
 
 </div>
-
-<footer>
-    <p>💻 Created by Riya Jain</p>
-</footer>
-
->>>>>>> be9078853fc549cc10273c995f0689e1c0cf18fa
 </body>
 </html>
