@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>database/init.sql — Schema &amp; Seed Data</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0d1117; color: #c9d1d9; font-family: 'Segoe UI', sans-serif; }
+    header {
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      padding: 16px 32px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    header a { color: #58a6ff; text-decoration: none; font-size: 14px; }
+    header a:hover { text-decoration: underline; }
+    header span { color: #8b949e; font-size: 14px; }
+    .file-header {
+      margin: 24px 32px 0;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+    }
+    .file-header .icon { font-size: 18px; }
+    .file-header .filename { font-weight: 600; color: #e6edf3; }
+    .file-header .badge {
+      margin-left: auto;
+      background: #21262d;
+      border: 1px solid #30363d;
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 12px;
+      color: #8b949e;
+    }
+    .code-block {
+      margin: 0 32px 32px;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 0 0 6px 6px;
+      overflow: auto;
+    }
+    pre {
+      padding: 16px;
+      font-family: 'Consolas', 'Monaco', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #e6edf3;
+      white-space: pre;
+    }
+    .line-nums {
+      display: inline-block;
+      min-width: 40px;
+      color: #484f58;
+      text-align: right;
+      padding-right: 16px;
+      user-select: none;
+      border-right: 1px solid #30363d;
+      margin-right: 16px;
+    }
+    .loading { padding: 32px; color: #8b949e; font-size: 14px; }
+    .error { padding: 32px; color: #f85149; font-size: 14px; }
+    /* SQL syntax */
+    .kw { color: #ff7b72; font-weight: bold; }
+    .type { color: #ffa657; }
+    .st { color: #a5d6ff; }
+    .cm { color: #8b949e; font-style: italic; }
+    .num { color: #79c0ff; }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="../index.html">🏠 Home</a>
+    <span>/</span>
+    <span>database</span>
+    <span>/</span>
+    <span style="color:#e6edf3;">init.sql</span>
+  </header>
+
+  <div class="file-header">
+    <span class="icon">🗄️</span>
+    <span class="filename">database/init.sql</span>
+    <span>— Schema &amp; seed data</span>
+    <span class="badge" id="linecount">Loading…</span>
+  </div>
+
+  <div class="code-block">
+    <pre id="code"><span class="loading">⏳ Loading file…</span></pre>
+  </div>
+
+  <script>
+    const RAW_URL = "https://raw.githubusercontent.com/riya27-04/containerization-assignment/main/database/init.sql";
+
+    fetch(RAW_URL)
+      .then(r => {
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        return r.text();
+      })
+      .then(text => {
+        const lines = text.split("\n");
+        document.getElementById("linecount").textContent = lines.length + " lines";
+        const html = lines.map((line, i) => {
+          const num = `<span class="line-nums">${i + 1}</span>`;
+          return num + escapeAndHighlight(line);
+        }).join("\n");
+        document.getElementById("code").innerHTML = html;
+      })
+      .catch(err => {
+        document.getElementById("code").innerHTML =
+          `<span class="error">❌ Could not load file: ${err.message}<br><br>` +
+          `<a href="${RAW_URL}" style="color:#58a6ff">View raw on GitHub →</a></span>`;
+      });
+
+    function escapeAndHighlight(line) {
+      let s = line
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+      // SQL comments
+      s = s.replace(/(--.*$)/, '<span class="cm">$1</span>');
+      s = s.replace(/(\/\*[\s\S]*?\*\/)/, '<span class="cm">$1</span>');
+      // SQL keywords
+      s = s.replace(/\b(SELECT|INSERT|UPDATE|DELETE|CREATE|DROP|ALTER|TABLE|INDEX|VIEW|DATABASE|SCHEMA|FROM|WHERE|INTO|VALUES|SET|ON|AS|JOIN|LEFT|RIGHT|INNER|OUTER|FULL|CROSS|GROUP BY|ORDER BY|HAVING|LIMIT|OFFSET|PRIMARY|KEY|FOREIGN|REFERENCES|UNIQUE|NOT NULL|DEFAULT|AUTO_INCREMENT|SERIAL|IF EXISTS|IF NOT EXISTS|BEGIN|COMMIT|ROLLBACK|GRANT|REVOKE|WITH|RETURNING|CONSTRAINT|CASCADE|RESTRICT)\b/gi,
+        '<span class="kw">$1</span>');
+      // SQL types
+      s = s.replace(/\b(INTEGER|INT|BIGINT|SMALLINT|TEXT|VARCHAR|CHAR|BOOLEAN|BOOL|FLOAT|DOUBLE|DECIMAL|NUMERIC|DATE|TIME|TIMESTAMP|TIMESTAMPTZ|UUID|JSONB|JSON|BYTEA|SERIAL|BIGSERIAL)\b/gi,
+        '<span class="type">$1</span>');
+      // strings
+      s = s.replace(/('(?:[^'\\]|\\.)*')/g, '<span class="st">$1</span>');
+      // numbers
+      s = s.replace(/\b(\d+)\b/g, '<span class="num">$1</span>');
+      return s;
+    }
+  </script>
+</body>
+</html>
