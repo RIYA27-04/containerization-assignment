@@ -7,9 +7,9 @@ services:
       context: ./database
     container_name: postgres_db
     environment:
+      POSTGRES_DB: riyadb
       POSTGRES_USER: riya
       POSTGRES_PASSWORD: riya123
-      POSTGRES_DB: riyadb
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
@@ -23,9 +23,9 @@ services:
     environment:
       DB_HOST: db
       DB_PORT: 5432
-      DB_NAME: appdb
-      DB_USER: os.getenv("DB_USER", "riya")
-      DB_PASS: os.getenv("DB_PASS", "riya123")
+      DB_NAME: riyadb
+      DB_USER: riya
+      DB_PASS: riya123
     ports:
       - "8000:8000"
     networks:
